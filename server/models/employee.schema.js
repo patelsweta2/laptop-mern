@@ -9,6 +9,7 @@ const departments = [
   "HR",
   "Microsoft",
   "Hospitality",
+  "dataManagement"
 ];
 const roles = ["Admin", "Employee"];
 
