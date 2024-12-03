@@ -6,8 +6,7 @@ import {
   updateLaptop,
   deleteLaptop,
 } from "../controller/laptopController.js";
-import { Authenticate } from "../middleware/authMiddleware.js";
-import { Authorize } from "../middleware/authMiddleware.js";
+import { Authenticate, Authorize } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
