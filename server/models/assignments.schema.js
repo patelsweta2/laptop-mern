@@ -12,7 +12,7 @@ const options = {
   },
   assignedAt: {
     type: Number,
-    required: [true, "assigned date is required"],
+    // required: [true, "assigned date is required"],
     validate: {
       validator: function (value) {
         return !isNaN(value) && value > 0; // Ensure it's a valid number and greater than zero
@@ -22,7 +22,7 @@ const options = {
   },
   returnedAt: {
     type: Number,
-    required: [true, "returned date is required"],
+    // required: [true, "returned date is required"],
     validate: {
       validator: function (value) {
         return !isNaN(value) && value > 0; // Ensure it's a valid number and greater than zero
@@ -34,6 +34,19 @@ const options = {
   reqStatus: {
     type: Boolean,
     default: false,
+  },
+  statusType: {
+    type: String,
+    enum: ["pending", "success", "denied"],
+    default: "pending",
+  },
+  deniedReason: {
+    type: String,
+    required: function () {
+      return this.statusType === "denied"; // Make this field required only when statusType is 'denied'
+    },
+    minlength: [5, "Reason must be at least 5 characters long"],
+    maxlength: [500, "Reason cannot exceed 500 characters"],
   },
 };
 
