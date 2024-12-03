@@ -29,27 +29,28 @@ export const addToMaintenance = catchAsyncError(async (req, res, next) => {
   });
 });
 
-//Mark maintenance is completed
-export const completeMaintenance = catchAsyncError(async (req, res, next) => {
+//Remove from maintenance
+export const removeFromMaintenance = catchAsyncError(async (req, res, next) => {
   const { maintenanceId } = req.params;
+
   // Find the maintenance record
   const maintenance = await Maintenance.findById(maintenanceId);
   if (!maintenance) {
     return next(new CustomError("Maintenance record not found", 404));
   }
-  // Update the maintenance status to 'Completed'
-  maintenance.status = "Completed";
-  await maintenance.save();
-  // Update the laptop's status to indicate it is available
+  // Find the associated laptop
   const laptop = await Laptop.findById(maintenance.laptopId);
-  if (laptop) {
-    laptop.status = "Available";
-    await laptop.save();
+  if (!laptop) {
+    return next(new CustomError("Associated laptop not found", 404));
   }
+  // Update laptop's status to 'Available'
+  laptop.status = "Available";
+  await laptop.save();
+  // Delete the maintenance record
+  await maintenance.deleteOne();
   res.status(200).json({
     success: true,
-    message: "Maintenance marked as completed successfully.",
-    maintenance,
+    message: "Laptop removed from maintenance successfully.",
   });
 });
 
