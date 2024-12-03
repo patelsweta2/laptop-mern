@@ -1,4 +1,5 @@
 import Assign from "../models/assignments.schema.js";
+import Laptop from "../models/laptops.schema.js";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import CustomError from "../utils/customError.js";
 
@@ -43,7 +44,7 @@ export const returnLaptop = catchAsyncError(async (req, res, next) => {
 // req accept or denied by admin
 export const requestUpdate = catchAsyncError(async (req, res, next) => {
   const { requestId } = req.params;
-  const { deniedReason } = req.body; // Check if the reason for denial is provided
+  const { deniedReason, laptopId } = req.body; // Check if the reason for denial is provided
 
   // Find the request record by ID
   const request = await Assign.findById(requestId);
@@ -75,9 +76,30 @@ export const requestUpdate = catchAsyncError(async (req, res, next) => {
   }
 
   // Handle Acceptance
+  if (!laptopId) {
+    return next(
+      new CustomError("Laptop ID is required to accept the request", 400)
+    );
+  }
+  // Fetch the laptop record
+  const laptop = await Laptop.findById(laptopId);
+  if (!laptop) {
+    return next(new CustomError("Laptop not found", 404));
+  }
+  // Check if the laptop is already assigned
+  if (laptop.status === "Assigned") {
+    return next(
+      new CustomError("This laptop is already assigned to another user", 400)
+    );
+  }
+
+  // Handle Acceptance
   request.reqStatus = false; // Set reqStatus to false after acceptance
-  request.statusType = "success"; // Mark as accepted
-  await request.save();
+  request.statusType = "success";
+  request.laptopId = laptopId;
+  request.assignedAt = new Date();
+  laptop.status = "Assigned";
+  await Promise.all([request.save(), laptop.save()]);
 
   res.status(200).json({
     message: "Congratulations! Your request has been accepted.",
