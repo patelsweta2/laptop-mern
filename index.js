@@ -7,6 +7,7 @@ import hpp from "hpp";
 import connectDB from "./server/config/db.js";
 import globalErrorHandler from "./server/middleware/globalErrorHandler.js";
 import userRouter from "./server/router/userRoutes.js";
+import laptopRouter from "./server/router/laptopRoute.js";
 
 dotenv.config();
 const app = express();
@@ -25,6 +26,7 @@ app.use(hpp());
 
 //endpoints
 app.use("/api/users", userRouter);
+app.use("api", laptopRouter);
 
 const PORT = process.env.PORT || 8000;
 const MODE = process.env.NODE_ENV || "production";
