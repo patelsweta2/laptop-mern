@@ -1,4 +1,4 @@
-import Laptop from "../models/laptops.schema";
+import Laptop from "../models/laptops.schema.js";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import CustomError from "../utils/customError.js";
 

@@ -1,4 +1,4 @@
-import catchAsyncError from "./cathAsyncError.js";
+import catchAsyncError from "./catchAsyncError.js";
 import CustomError from "../utils/customError.js";
 import jwt from "jsonwebtoken";
 export const Authenticate = catchAsyncError(async (req, res, next) => {

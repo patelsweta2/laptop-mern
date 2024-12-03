@@ -18,4 +18,4 @@ router
 router.route("/laptop/:serialNumber").put(Authorize("admin"), updateLaptop);
 router.route("/laptop/:serialNumber").delete(Authorize("admin"), deleteLaptop);
 
-export default laptop;
+export default router;
