@@ -12,7 +12,7 @@ const departments = [
   "Hospitality",
   "dataManagement",
 ];
-const roles = ["Admin", "Employee"];
+const roles = ["admin", "employee"];
 
 const options = {
   name: {
