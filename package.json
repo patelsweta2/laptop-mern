@@ -7,15 +7,14 @@
     "start": "npm run build && node backend/server.js",
     "build": "npm run build --prefix frontend",
     "client": "npm run dev --prefix frontend",
-    "server": "nodemon backend/server.js",
-    "dev": "concurrently \"cross-env NODE_ENV=development npm run server\" \"npm run client\"",
-    "prod": "cross-env NODE_ENV=production npm start"
+    "server": "nodemon backend/server.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "argon2": "^0.41.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-mongo-sanitize": "^2.2.0",

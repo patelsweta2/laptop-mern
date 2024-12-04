@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-import pkg from "argon2";
-
-const { argon2 } = pkg;
+import argon2 from "argon2";
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const departments = [

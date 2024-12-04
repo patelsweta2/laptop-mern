@@ -14,7 +14,7 @@ export const signUp = catchAsyncError(async (req, res, next) => {
   }
 
   //create new user
-  const user = await user.create({ name, email, password, department, role });
+  const user = await User.create({ name, email, password, department, role });
 
   // Respond with user details (excluding sensitive info like password)
   res.status(201).json({

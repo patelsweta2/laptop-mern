@@ -9,6 +9,7 @@ import globalErrorHandler from "./server/middleware/globalErrorHandler.js";
 import userRouter from "./server/router/userRoutes.js";
 import laptopRouter from "./server/router/laptopRoute.js";
 import assignRouter from "./server/router/assignRouter.js";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,7 @@ app.use(helmet());
 // body parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors());
 
 // Santize data
 app.use(mongoSanitize()); //nosql injection atack
@@ -27,25 +29,17 @@ app.use(hpp());
 
 //endpoints
 app.use("/api/users", userRouter);
-app.use("api", laptopRouter);
-app.use("api", assignRouter);
+app.use("/api", laptopRouter);
+app.use("/api", assignRouter);
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 5000;
 const MODE = process.env.NODE_ENV || "production";
 
-if (MODE === "production") {
-  app.use(express.static(path.resolve("backend", "public")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve("backend", "public", "index.html"));
-  });
-} else {
-  app.get("/", (req, res) => {
-    res.send("server is running");
-  });
-}
-
 //global error handler
-app.use(globalErrorHandler);
+// app.use(globalErrorHandler);
+app.get("/", (req, res) => {
+  res.send("Server is running");
+});
 
 const start = async () => {
   try {
