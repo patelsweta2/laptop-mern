@@ -89,3 +89,20 @@ export const login = catchAsyncError(async (req, res, next) => {
       },
     });
 });
+
+// Get all employees controller --> GET -> api/users/employees
+export const getAllEmployees = catchAsyncError(async (req, res, next) => {
+  // Fetch all users with 'employee' role from the database
+  const employees = await User.find({ role: "employee" }).select("-password");
+  // Check if employees exist
+  if (!employees || employees.length === 0) {
+    return next(new CustomError("No employees found", 404));
+  }
+  // Respond with the list of employees
+  res.status(200).json({
+    success: true,
+    message: "Employees fetched successfully",
+    employees,
+    totalEmployees: employees.length,
+  });
+});
