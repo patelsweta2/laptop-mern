@@ -4,10 +4,12 @@ import argon2 from "argon2";
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const departments = [
-  "IT Support",
+  "IT",
   "Development",
   "QA",
   "HR",
+  "finance",
+  "marketing",
   "Microsoft",
   "Hospitality",
   "dataManagement",
@@ -38,7 +40,7 @@ const options = {
     type: String,
     enum: {
       values: departments,
-      message: "{value} as department not supported",
+      message: `value as department not supported`,
     },
     required: true,
   },
@@ -46,7 +48,7 @@ const options = {
     type: String,
     enum: {
       values: roles,
-      message: "{value} as role not supported",
+      message: "value as role not supported",
     },
     default: "employee",
   },

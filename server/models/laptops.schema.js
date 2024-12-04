@@ -31,13 +31,13 @@ const options = {
     },
   },
   purchaseDate: {
-    type: Number,
-    required: [true, "Purchase date is required"],
+    type: Date, // Use Date type for normal date
+    required: [true, "Purchase date is required"], // Validation message for required field
     validate: {
       validator: function (value) {
-        return !isNaN(value) && value > 0; // Ensure it's a valid number and greater than zero
+        return value instanceof Date && !isNaN(value); // Ensure the value is a valid Date
       },
-      message: "Invalid purchase date (epoch time must be a valid number)",
+      message: "Invalid purchase date (must be a valid date)", // Custom error message
     },
   },
 };
