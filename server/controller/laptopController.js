@@ -6,6 +6,10 @@ import CustomError from "../utils/customError.js";
 export const createLaptop = catchAsyncError(async (req, res, next) => {
   const { brand, model, serialNumber, status, purchaseDate } = req.body;
 
+  if (!brand || !model || !serialNumber || !purchaseDate) {
+    return next(new CustomError("All fields are required", 400));
+  }
+
   // Check if laptop with the same serial number already exists
   const existingLaptop = await Laptop.findOne({ serialNumber });
   if (existingLaptop) {
@@ -19,16 +23,33 @@ export const createLaptop = catchAsyncError(async (req, res, next) => {
     model,
     serialNumber,
     status,
-    purchaseDate,
+    purchaseDate: new Date(purchaseDate), // Ensure it's a Date object
   });
+
   await newLaptop.save();
-  res.status(201).json({ message: "Laptop created successfully", newLaptop });
+
+  res.status(201).json({
+    success: true,
+    message: "Laptop created successfully",
+    laptop: newLaptop,
+  });
 });
 
-// Get all laptops
+// Get all laptops (with pagination)
 export const getAllLaptops = catchAsyncError(async (req, res) => {
-  const laptops = await Laptop.find();
-  res.status(200).json(laptops);
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  const laptops = await Laptop.find()
+    .skip((page - 1) * limit)
+    .limit(limit);
+
+  res.status(200).json({
+    success: true,
+    laptops,
+    page,
+    limit,
+  });
 });
 
 // Get a specific laptop by serial number
@@ -40,7 +61,10 @@ export const getLaptopBySerialNumber = catchAsyncError(
     if (!laptop) {
       return next(new CustomError("Laptop not found", 404));
     }
-    res.status(200).json(laptop);
+    res.status(200).json({
+      success: true,
+      laptop,
+    });
   }
 );
 
@@ -54,7 +78,11 @@ export const updateLaptop = catchAsyncError(async (req, res, next) => {
   if (!laptop) {
     return next(new CustomError("Laptop not found", 404));
   }
-  res.status(200).json({ message: "Laptop updated successfully", laptop });
+  res.status(200).json({
+    success: true,
+    message: "Laptop updated successfully",
+    laptop,
+  });
 });
 
 // Delete a laptop by serial number
@@ -65,5 +93,9 @@ export const deleteLaptop = catchAsyncError(async (req, res, next) => {
   if (!laptop) {
     return next(new CustomError("Laptop not found", 404));
   }
-  res.status(200).json({ message: "Laptop deleted successfully", laptop });
+  res.status(200).json({
+    success: true,
+    message: "Laptop deleted successfully",
+    laptop,
+  });
 });
