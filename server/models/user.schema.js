@@ -44,8 +44,11 @@ const options = {
   },
   role: {
     type: String,
-    enum: roles,
-    default: "Employee",
+    enum: {
+      values: roles,
+      message: "{value} as role not supported",
+    },
+    default: "employee",
   },
 };
 

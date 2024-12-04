@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+const laptopStatus = ["available", "assigned", "maintenance"];
+
 const options = {
   brand: {
     type: String,
@@ -17,8 +19,16 @@ const options = {
   },
   status: {
     type: String,
-    enum: ["available", "assigned", "maintenance"],
+    enum: laptopStatus,
     default: "available",
+    validate: {
+      validator: function (value) {
+        // Add custom logic for validation
+        const validStatuses = ["available", "assigned", "maintenance"];
+        return validStatuses.includes(value);
+      },
+      message: (props) => `${props.value} is not a valid status!`,
+    },
   },
   purchaseDate: {
     type: Number,
