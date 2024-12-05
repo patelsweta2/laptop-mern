@@ -65,10 +65,10 @@ export const getAllEmployees = createAsyncThunk(
 
 // Initial State
 const initialState = {
-  user: null, // Store user details after login
-  employees: [], // Store the list of employees
-  loading: false, // Indicates if an API call is in progress
-  error: null, // Stores any error messages
+  user: null,
+  employees: [],
+  loading: false,
+  error: null,
 };
 
 // User Slice
@@ -79,7 +79,7 @@ const userSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.error = null;
-      Cookies.remove("token"); // Remove token on logout
+      Cookies.remove("token");
     },
   },
   extraReducers: (builder) => {
@@ -91,7 +91,7 @@ const userSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user; // Assign user details
+        state.user = action.payload.user;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -105,7 +105,7 @@ const userSlice = createSlice({
       })
       .addCase(signUp.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user; // Assign user details
+        state.user = action.payload.user;
       })
       .addCase(signUp.rejected, (state, action) => {
         state.loading = false;
@@ -119,7 +119,7 @@ const userSlice = createSlice({
       })
       .addCase(getAllEmployees.fulfilled, (state, action) => {
         state.loading = false;
-        state.employees = action.payload; // Assign employee list
+        state.employees = action.payload;
       })
       .addCase(getAllEmployees.rejected, (state, action) => {
         state.loading = false;
