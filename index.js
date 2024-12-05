@@ -10,12 +10,14 @@ import userRouter from "./server/router/userRoutes.js";
 import laptopRouter from "./server/router/laptopRoute.js";
 import assignRouter from "./server/router/assignRouter.js";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 const app = express();
 
 // Setup security headers
 app.use(helmet());
+app.use(cookieParser());
 
 // body parser
 app.use(express.urlencoded({ extended: true }));

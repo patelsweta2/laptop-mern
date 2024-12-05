@@ -4,19 +4,19 @@ import {
   returnLaptop,
   requestUpdate,
 } from "../controller/assignController.js";
-import { Authenticate, Authorize } from "../middleware/authMiddleware.js";
+import { authMiddleware, Authorize } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // Route to request a laptop
-router.route("/requests").post(Authenticate, requestLaptop);
+router.route("/requests").post(authMiddleware, requestLaptop);
 
 // Route to return a laptop
-router.route("/requests/return/:requestId").put(Authenticate, returnLaptop);
+router.route("/requests/return/:requestId").put(authMiddleware, returnLaptop);
 
 // Route for admin to accept or deny a request
 router
   .route("/requests/:requestId")
-  .put(Authenticate, Authorize("admin"), requestUpdate);
+  .put(authMiddleware, Authorize("admin"), requestUpdate);
 
 export default router;

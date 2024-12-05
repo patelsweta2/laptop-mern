@@ -1,27 +1,34 @@
 import catchAsyncError from "./catchAsyncError.js";
 import CustomError from "../utils/customError.js";
 import jwt from "jsonwebtoken";
-export const Authenticate = catchAsyncError(async (req, res, next) => {
-  let token;
-  const AUTHORIZATION = "Authorization";
-  if (
-    req.headers[AUTHORIZATION] &&
-    req.headers[AUTHORIZATION].includes("Bearer")
-  ) {
-    token = req.headers[AUTHORIZATION].split(" ")[1];
-  }
+import User from "../models/user.schema.js";
 
-  if (!token) {
-    return next(new CustomError("Authentication failed! no token", 400));
+export const authMiddleware = catchAsyncError(async (req, res, next) => {
+  try {
+    const token = req.cookies.auth_token;
+    if (!token) {
+      throw new CustomError("Authentication token is missing", 401);
+    }
+
+    // verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const user = await User.findById(decoded.userId).select("role");
+    if (!user) {
+      throw new CustomError("User not found", 404);
+    }
+    req.user = { userId: user._id, role: user.role };
+    next();
+  } catch (error) {
+    res
+      .status(error.statusCode || 500)
+      .json({ error: error.message || "Authentication failed" });
   }
-  const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
-  req.user = await User.findById(decode.id);
-  next();
 });
 
 export const Authorize = (requiredRole) => {
   return (req, res, next) => {
-    //check if user exists and has the required role
+    console.log("Authorize Middleware: User Info:", req.user);
+
     if (!req.user || req.user.role !== requiredRole) {
       return next(
         new CustomError(
@@ -30,7 +37,7 @@ export const Authorize = (requiredRole) => {
         )
       );
     }
-    // User has the required role, proceed
+
     next();
   };
 };

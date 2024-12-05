@@ -68,29 +68,20 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
   return await argon2.verify(this.password, enteredPassword);
 };
 
-userSchema.methods.getAccessJwtToken = function () {
+//getJwtToken
+userSchema.methods.getJwtToken = async function () {
   try {
-    return jwt.sign({ id: this._id }, process.env.JWT_ACCESS_SECRET_KEY, {
-      expiresIn: process.env.JWT_ACCESS_EXPIRES_TIME,
+    return jwt.sign({ userId: this._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: process.env.JWT_EXPIRES_TIME,
     });
-  } catch (err) {
-    console.error("Error generating access token:", err);
-    return null;
-  }
-};
-
-userSchema.methods.getRefreshJwtToken = function () {
-  try {
-    return jwt.sign({ id: this._id }, process.env.JWT_REFRESH_SECRET_KEY, {
-      expiresIn: process.env.JWT_REFRESH_EXPIRES_TIME,
-    });
-  } catch (err) {
-    console.error("Error generating refresh token:", err);
-    return null;
+  } catch (error) {
+    console.error("Error generating JWT:", error.message);
+    throw new Error("Token generation failed");
   }
 };
 
 const User = mongoose.model("User", userSchema);
 
+userSchema.index({ email: 1 });
 export { userSchema };
 export default User;
