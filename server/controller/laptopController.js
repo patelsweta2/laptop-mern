@@ -40,6 +40,35 @@ export const getAllLaptops = catchAsyncError(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
 
+  // Aggregation pipeline to count total,available,maintenance, and issue laptops
+  const laptopCounts = await Laptop.aggregate([
+    {
+      $facet: {
+        totalLaptops: [{ $count: "total" }],
+        availableLaptops: [
+          { $match: { status: "available" } },
+          { $count: "available" },
+        ],
+        maintenanceLaptops: [
+          { $match: { status: "maintenance" } },
+          { $count: "maintenance" },
+        ],
+        issueLaptops: [{ $match: { status: "issue" } }, { $count: "issue" }],
+      },
+    },
+    {
+      $project: {
+        totalLaptops: { $arrayElemAt: ["$totalLaptops.total", 0] },
+        availableLaptops: { $arrayElemAt: ["$availableLaptops.available", 0] },
+        maintenanceLaptops: {
+          $arrayElemAt: ["$maintenanceLaptops.maintenance", 0],
+        },
+        issueLaptops: { $arrayElemAt: ["$issueLaptops.issue", 0] },
+      },
+    },
+  ]);
+  const counts = laptopCounts[0];
+
   const laptops = await Laptop.find()
     .skip((page - 1) * limit)
     .limit(limit);
@@ -49,6 +78,10 @@ export const getAllLaptops = catchAsyncError(async (req, res) => {
     laptops,
     page,
     limit,
+    totalLaptops: counts.totalLaptops || 0,
+    availableLaptops: counts.availableLaptops || 0,
+    maintenanceLaptops: counts.maintenanceLaptops || 0,
+    issueLaptops: counts.issueLaptops || 0,
   });
 });
 
