@@ -2,7 +2,7 @@ import express from "express";
 import {
   createLaptop,
   getAllLaptops,
-  getLaptopBySerialNumber,
+  getLaptopById,
   updateLaptop,
   deleteLaptop,
 } from "../controller/laptopController.js";
@@ -16,10 +16,10 @@ router.route("/laptop").post(authMiddleware, Authorize("admin"), createLaptop);
 // Route for getting all laptops
 router.route("/laptops").get(authMiddleware, Authorize("admin"), getAllLaptops);
 
-// Route for getting, updating, and deleting a laptop by serial number
+// Route for getting, updating, and deleting a laptop by id
 router
-  .route("/laptop/:serialNumber")
-  .get(authMiddleware, Authorize("admin"), getLaptopBySerialNumber)
+  .route("/laptop/:id")
+  .get(authMiddleware, Authorize("admin"), getLaptopById)
   .put(authMiddleware, Authorize("admin"), updateLaptop)
   .delete(authMiddleware, Authorize("admin"), deleteLaptop);
 

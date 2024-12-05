@@ -86,31 +86,31 @@ export const getAllLaptops = catchAsyncError(async (req, res) => {
 });
 
 // Get a specific laptop by serial number
-export const getLaptopBySerialNumber = catchAsyncError(
-  async (req, res, next) => {
-    const laptop = await Laptop.findOne({
-      serialNumber: req.params.serialNumber,
-    });
-    if (!laptop) {
-      return next(new CustomError("Laptop not found", 404));
-    }
-    res.status(200).json({
-      success: true,
-      laptop,
-    });
-  }
-);
-
-// Update a laptop by serial number
-export const updateLaptop = catchAsyncError(async (req, res, next) => {
-  const laptop = await Laptop.findOneAndUpdate(
-    { serialNumber: req.params.serialNumber },
-    req.body,
-    { new: true, runValidators: true }
-  );
+export const getLaptopById = catchAsyncError(async (req, res, next) => {
+  const laptop = await Laptop.findById(req.params.id); // Find by ID
   if (!laptop) {
     return next(new CustomError("Laptop not found", 404));
   }
+  res.status(200).json({
+    success: true,
+    laptop,
+  });
+});
+
+// Update a laptop by serial number
+export const updateLaptop = catchAsyncError(async (req, res, next) => {
+  const { serialNumber, ...updateData } = req.body;
+  const laptop = await Laptop.findByIdAndUpdate(req.params.id, updateData, {
+    new: true,
+    runValidators: true,
+  });
+
+  // Check if the laptop exists
+  if (!laptop) {
+    return next(new CustomError("Laptop not found", 404));
+  }
+
+  // Respond with the updated laptop
   res.status(200).json({
     success: true,
     message: "Laptop updated successfully",
@@ -120,9 +120,7 @@ export const updateLaptop = catchAsyncError(async (req, res, next) => {
 
 // Delete a laptop by serial number
 export const deleteLaptop = catchAsyncError(async (req, res, next) => {
-  const laptop = await Laptop.findOneAndDelete({
-    serialNumber: req.params.serialNumber,
-  });
+  const laptop = await Laptop.findOneAndDelete(req.params.id);
   if (!laptop) {
     return next(new CustomError("Laptop not found", 404));
   }
