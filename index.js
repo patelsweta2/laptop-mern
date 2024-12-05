@@ -31,7 +31,7 @@ app.use(hpp());
 
 //endpoints
 app.use("/api/users", userRouter);
-app.use("/api", laptopRouter);
+app.use("/api/laptops", laptopRouter);
 app.use("/api", assignRouter);
 
 const PORT = process.env.PORT || 5000;
