@@ -2,21 +2,27 @@ import express from "express";
 import {
   requestLaptop,
   returnLaptop,
-  requestUpdate,
+  handleAssignRequest,
+  handleReturnRequest,
 } from "../controller/assignController.js";
 import { authMiddleware, Authorize } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Route to request a laptop
-router.route("/requests").post(authMiddleware, requestLaptop);
+// Route to request a new laptop
+router.route("/request-laptop").post(authMiddleware, requestLaptop);
 
-// Route to return a laptop
-router.route("/requests/return/:requestId").put(authMiddleware, returnLaptop);
+// Route to request for return laptop
+router.route("/return-laptop").post(authMiddleware, returnLaptop);
+
+// Route for handling assignment requests (approve/deny)
+router
+  .route("/handle-assign-request/:id")
+  .put(authMiddleware, Authorize("admin"), handleAssignRequest);
 
 // Route for admin to accept or deny a request
 router
-  .route("/requests/:requestId")
-  .put(authMiddleware, Authorize("admin"), requestUpdate);
+  .route("/handle-return-request/:id")
+  .put(authMiddleware, Authorize("admin"), handleReturnRequest);
 
 export default router;

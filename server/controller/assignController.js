@@ -3,106 +3,194 @@ import Laptop from "../models/laptops.schema.js";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import CustomError from "../utils/customError.js";
 
-//Request a laptop
+// Request for new laptop
 export const requestLaptop = catchAsyncError(async (req, res, next) => {
+  const { reqType } = req.body;
+
+  // Validate request type
+  if (reqType !== "assignRequest") {
+    return res.status(400).json({
+      message: "Invalid request type. It must be 'assignRequest'.",
+    });
+  }
+
   const request = new Assign({
     employeeId: req.user._id,
-    reqStatus: true,
+    reqType,
+    statusType: "pending",
   });
+
   await request.save();
+
   res.status(201).json({
     message:
-      "Laptop request submitted successfully. Admin will assign a laptop.",
+      "Laptop assignment request submitted successfully. Admin will review your request.",
     request,
   });
 });
 
-//Return a laptop
+// Return request for assign laptop
 export const returnLaptop = catchAsyncError(async (req, res, next) => {
-  const { assignId } = req.body;
+  const { reqType, laptopId } = req.body;
 
-  // Find the assignment record where employee has the laptop
-  const assignRecord = await Assign.findById(assignId);
-  if (!assignRecord) {
-    return next(new CustomError("Assignment record not found", 404));
+  if (reqType !== "returnRequest") {
+    return res.status(400).json({
+      message: "Invalid request type. It must be 'returnRequest'.",
+    });
   }
-  // Check if the logged-in user is the same as the employeeId in the record
-  if (assignRecord.employeeId.toString() !== req.user._id.toString()) {
+
+  // Validate assignId and laptopId
+  if (!laptopId) {
+    return res.status(400).json({
+      message: "assignId and laptopId are required to return a laptop.",
+    });
+  }
+
+  // Find the assignment record that matches both assignId and laptopId
+  const assignRecord = await Assign.findOne({
+    laptopId: laptopId,
+    statusType: { $ne: "denied" },
+  });
+
+  // If the assignment record is not found
+  if (!assignRecord) {
     return next(
-      new CustomError("You are not authorized to return this laptop", 403)
+      new CustomError(
+        "Assignment record with the given laptopId not found.",
+        404
+      )
     );
   }
-  assignRecord.returnedAt = Date.now(); // Set the returned date to current time
-  assignRecord.reqStatus = true;
+
+  // Authorization check
+  if (assignRecord.employeeId.toString() !== req.user._id.toString()) {
+    return next(
+      new CustomError("You are not authorized to return this laptop.", 403)
+    );
+  }
+
+  // Ensure the laptop has not already been returned
+  if (assignRecord.returnedAt) {
+    return next(new CustomError("Laptop has already been returned.", 400));
+  }
+
+  // Update the record for the return request
+  assignRecord.reqType = "returnRequest";
+  assignRecord.statusType = "pending";
   await assignRecord.save();
+
+  // Send a response confirming the return request submission
   res.status(200).json({
-    message: "Laptop return assigned",
+    message:
+      "Laptop return request submitted successfully. Admin will review your request.",
     assignRecord,
   });
 });
 
-// req accept or denied by admin
-export const requestUpdate = catchAsyncError(async (req, res, next) => {
-  const { requestId } = req.params;
-  const { deniedReason, laptopId } = req.body; // Check if the reason for denial is provided
+// Request accept or denied for new laptop
+export const handleAssignRequest = catchAsyncError(async (req, res, next) => {
+  const { laptopId, deniedReason, reqType } = req.body;
 
-  // Find the request record by ID
-  const request = await Assign.findById(requestId);
+  if (reqType !== "assignRequest") {
+    return next(new CustomError("Invalid req type", 400));
+  }
 
-  // If the request is not found
+  // find the assignment record
+  const request = await Assign.findById(req.params.id);
   if (!request) {
     return next(new CustomError("Request not found", 404));
   }
 
-  // If the request has already been accepted
-  if (request.statusType === "success") {
-    return next(new CustomError("This request has already been accepted", 400));
-  }
-  if (request.statusType === "denied") {
-    return next(new CustomError("This request has already been denied", 400));
-  }
-
-  // Handle Denial
+  //handle Denied
   if (deniedReason && deniedReason.trim().length >= 5) {
-    request.reqStatus = false;
     request.statusType = "denied";
     request.deniedReason = deniedReason;
     await request.save();
-
     return res.status(200).json({
-      message: "Your request has been denied.",
+      message: "Assignment request has been denied.",
       request,
     });
   }
 
-  // Handle Acceptance
+  // handle Acceptance
   if (!laptopId) {
     return next(
       new CustomError("Laptop ID is required to accept the request", 400)
     );
   }
-  // Fetch the laptop record
+
   const laptop = await Laptop.findById(laptopId);
   if (!laptop) {
     return next(new CustomError("Laptop not found", 404));
   }
-  // Check if the laptop is already assigned
-  if (laptop.status === "Assigned") {
+
+  //check if the laptop is already assign
+  if (laptop.status === "assigned" || laptop.status === "maintenance") {
     return next(
-      new CustomError("This laptop is already assigned to another user", 400)
+      new CustomError(
+        "This laptop is already assigned or under maintenance",
+        400
+      )
     );
   }
-
-  // Handle Acceptance
-  request.reqStatus = false; // Set reqStatus to false after acceptance
+  // update request and laptop status
   request.statusType = "success";
   request.laptopId = laptopId;
   request.assignedAt = new Date();
-  laptop.status = "Assigned";
+  laptop.statusType = "assigned";
   await Promise.all([request.save(), laptop.save()]);
+  return res.status(200).json({
+    message: "Laptop has been successfully assigned to the user.",
+    request,
+  });
+});
 
-  res.status(200).json({
-    message: "Congratulations! Your request has been accepted.",
+// Request accept or denied for return laptop
+
+export const handleReturnRequest = catchAsyncError(async (req, res, next) => {
+  const { laptopId, deniedReason, reqType } = req.body;
+  if (reqType !== "returnRequest") {
+    return next(new CustomError("Invalid request type", 400));
+  }
+
+  // find the assignment record
+  const request = await Assign.findById(req.params.id);
+  if (!request) {
+    return next(new CustomError("Request not found", 404));
+  }
+
+  // handle Denial
+  if (deniedReason && deniedReason.trim().length >= 5) {
+    request.statusType = "denied";
+    request.deniedReason = deniedReason;
+    await request.save();
+
+    return res.status(200).json({
+      message: "Return request has been denied.",
+      request,
+    });
+  }
+  // Handle Acceptance (Admin accepts the return request)
+  if (!laptopId) {
+    return next(
+      new CustomError(
+        "Laptop ID is required to process the return request",
+        400
+      )
+    );
+  }
+  const laptop = await Laptop.findById(laptopId);
+  if (!laptop) {
+    return next(new CustomError("Laptop not found", 404));
+  }
+
+  // update data
+  laptop.status = "available";
+  request.statusType = "success";
+  request.returnedAt = new Date();
+  await Promise.all([request.save(), laptop.save()]);
+  return res.status(200).json({
+    message: "Laptop has been successfully returned.",
     request,
   });
 });
