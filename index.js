@@ -9,6 +9,8 @@ import globalErrorHandler from "./server/middleware/globalErrorHandler.js";
 import userRouter from "./server/router/userRoutes.js";
 import laptopRouter from "./server/router/laptopRoute.js";
 import assignRouter from "./server/router/assignRouter.js";
+import issuesRouter from "./server/router/issuesRouter.js";
+import maintenanceRouter from "./server/router/maintenanceRouter.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -33,6 +35,8 @@ app.use(hpp());
 app.use("/api/users", userRouter);
 app.use("/api/laptops", laptopRouter);
 app.use("/api/assign", assignRouter);
+app.use("/api/issues", issuesRouter);
+app.use("/api/maintenance", maintenanceRouter);
 
 const PORT = process.env.PORT || 5000;
 const MODE = process.env.NODE_ENV || "production";
