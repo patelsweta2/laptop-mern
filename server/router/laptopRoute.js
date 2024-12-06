@@ -5,6 +5,7 @@ import {
   getLaptopById,
   updateLaptop,
   deleteLaptop,
+  getLaptopsByStatus,
 } from "../controller/laptopController.js";
 import { authMiddleware, Authorize } from "../middleware/authMiddleware.js";
 
@@ -24,5 +25,10 @@ router
   .get(authMiddleware, Authorize("admin"), getLaptopById)
   .put(authMiddleware, Authorize("admin"), updateLaptop)
   .delete(authMiddleware, Authorize("admin"), deleteLaptop);
+
+// Route for getting laptops by status (available, maintenance, issue)
+router
+  .route("/getLaptops/status/:status")
+  .get(authMiddleware, Authorize("admin"), getLaptopsByStatus);
 
 export default router;

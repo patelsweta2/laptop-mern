@@ -130,3 +130,37 @@ export const deleteLaptop = catchAsyncError(async (req, res, next) => {
     laptop,
   });
 });
+
+// A single function to handle fetching laptops based on status
+export const getLaptopsByStatus = catchAsyncError(async (req, res, next) => {
+  const status = req.params.status;
+
+  // Validate if the status is valid
+  if (!["available", "maintenance", "issue"].includes(status)) {
+    return next(new CustomError("Invalid status", 400));
+  }
+
+  // Pagination parameters
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  // Calculate the number of documents to skip based on the page and limit
+  const skip = (page - 1) * limit;
+
+  // Get the count of laptops with the specified status
+  const totalLaptops = await Laptop.countDocuments({ status });
+
+  // Find the laptops based on the status, with pagination
+  const laptops = await Laptop.find({ status }).skip(skip).limit(limit);
+
+  // Send the response with paginated data
+  res.status(200).json({
+    success: true,
+    laptops,
+    status,
+    page,
+    limit,
+    totalLaptops,
+    totalPages: Math.ceil(totalLaptops / limit),
+  });
+});
