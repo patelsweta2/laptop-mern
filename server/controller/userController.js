@@ -1,7 +1,6 @@
 import User from "../models/user.schema.js";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import CustomError from "./../utils/customError.js";
-import RefreshToken from "../models/refreshtoken.js";
 
 //signUp controller --> POST -> api/users/signup
 export const signUp = catchAsyncError(async (req, res, next) => {
