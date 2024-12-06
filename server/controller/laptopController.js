@@ -88,7 +88,7 @@ export const getAllLaptops = catchAsyncError(async (req, res) => {
   });
 });
 
-/* Get a specific laptop by serial number */
+/* Get a specific laptop by laptopId*/
 export const getLaptopById = catchAsyncError(async (req, res, next) => {
   const laptop = await Laptop.findById(req.params.id); // Find by ID
   if (!laptop) {
@@ -100,7 +100,7 @@ export const getLaptopById = catchAsyncError(async (req, res, next) => {
   });
 });
 
-/* Update a laptop by serial number */
+/* Update a laptop by laptopId*/
 export const updateLaptop = catchAsyncError(async (req, res, next) => {
   const { serialNumber, ...updateData } = req.body;
   const laptop = await Laptop.findByIdAndUpdate(req.params.id, updateData, {
@@ -121,7 +121,7 @@ export const updateLaptop = catchAsyncError(async (req, res, next) => {
   });
 });
 
-/*  Delete a laptop by serial number */
+/*  Delete a laptop by laptopId */
 export const deleteLaptop = catchAsyncError(async (req, res, next) => {
   const laptop = await Laptop.findOneAndDelete(req.params.id);
   if (!laptop) {
