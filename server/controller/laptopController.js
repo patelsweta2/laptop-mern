@@ -53,7 +53,10 @@ export const getAllLaptops = catchAsyncError(async (req, res) => {
           { $match: { status: "maintenance" } },
           { $count: "maintenance" },
         ],
-        issueLaptops: [{ $match: { status: "issue" } }, { $count: "issue" }],
+        assignedLaptops: [
+          { $match: { status: "assigned" } },
+          { $count: "assigned" },
+        ],
       },
     },
     {
@@ -63,7 +66,7 @@ export const getAllLaptops = catchAsyncError(async (req, res) => {
         maintenanceLaptops: {
           $arrayElemAt: ["$maintenanceLaptops.maintenance", 0],
         },
-        issueLaptops: { $arrayElemAt: ["$issueLaptops.issue", 0] },
+        assignedLaptops: { $arrayElemAt: ["$assignedLaptops.assigned", 0] },
       },
     },
   ]);
@@ -81,7 +84,7 @@ export const getAllLaptops = catchAsyncError(async (req, res) => {
     totalLaptops: counts.totalLaptops || 0,
     availableLaptops: counts.availableLaptops || 0,
     maintenanceLaptops: counts.maintenanceLaptops || 0,
-    issueLaptops: counts.issueLaptops || 0,
+    assignedLaptops: counts.assignedLaptops || 0,
   });
 });
 
@@ -136,7 +139,7 @@ export const getLaptopsByStatus = catchAsyncError(async (req, res, next) => {
   const status = req.params.status;
 
   // Validate if the status is valid
-  if (!["available", "maintenance", "issue"].includes(status)) {
+  if (!["available", "maintenance", "assigned"].includes(status)) {
     return next(new CustomError("Invalid status", 400));
   }
 

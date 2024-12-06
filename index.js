@@ -32,7 +32,7 @@ app.use(hpp());
 //endpoints
 app.use("/api/users", userRouter);
 app.use("/api/laptops", laptopRouter);
-app.use("/api", assignRouter);
+app.use("/api/assign", assignRouter);
 
 const PORT = process.env.PORT || 5000;
 const MODE = process.env.NODE_ENV || "production";
