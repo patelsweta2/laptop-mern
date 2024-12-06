@@ -6,7 +6,7 @@ const options = {
   brand: {
     type: String,
     required: [true, "Brand name is required"],
-    minlength: [3, "Brand name should have 3 characters"],
+    minlength: [2, "Brand name should have 2 characters"],
   },
   model: {
     type: String,

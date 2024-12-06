@@ -20,7 +20,7 @@ const options = {
   },
   status: {
     type: String,
-    enum: ["pending", "accept"],
+    enum: ["pending", "resolved"],
     required: true,
     default: "Pending",
   },
