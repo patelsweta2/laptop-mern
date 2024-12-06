@@ -201,7 +201,7 @@ export const handleReturnRequest = catchAsyncError(async (req, res, next) => {
 
 /* get assign request history */
 export const getAllAssignHistory = catchAsyncError(async (req, res, next) => {
-  const { page = 1, limit = 10 } = req.query; // Page number and limit from query params
+  const { page = 1, limit = 10 } = req.query;
 
   // Calculate the skip value (for pagination)
   const skip = (page - 1) * limit;
