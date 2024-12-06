@@ -1,16 +1,20 @@
 import express from "express";
-
-import { Authenticate, Authorize } from "../middleware/authMiddleware.js";
+import {
+  addToMaintenance,
+  removeFromMaintenance,
+} from "../controller/maintenanceController.js"; // Make sure the controller path is correct
+import { authMiddleware, Authorize } from "../middleware/authMiddleware.js"; // If needed for authorization
 
 const router = express.Router();
 
-// Route to request a laptop
-router.route().post(Authenticate);
+// Route to add laptop to maintenance
+router
+  .route("/add-to-maintenance")
+  .post(authMiddleware, Authorize("admin"), addToMaintenance);
 
-// Route to return a laptop
-router.route().put(Authenticate);
-
-// Route for admin to accept or deny a request
-router.route().put(Authenticate, Authorize("admin"));
+// Route to remove laptop from maintenance
+router
+  .route("/remove-from-maintenance/:maintenanceId")
+  .delete(authMiddleware, Authorize("admin"), removeFromMaintenance);
 
 export default router;

@@ -53,18 +53,3 @@ export const removeFromMaintenance = catchAsyncError(async (req, res, next) => {
     message: "Laptop removed from maintenance successfully.",
   });
 });
-
-/* view all laptop under maintenance */
-export const getLaptopsUnderMaintenance = catchAsyncError(
-  async (req, res, next) => {
-    // Find all maintenance records with status 'Pending'
-    const maintenanceRecords = await Maintenance.find({
-      status: "Pending",
-    }).populate("laptopId", "name status");
-    res.status(200).json({
-      success: true,
-      message: "Laptops currently under maintenance retrieved successfully.",
-      data: maintenanceRecords,
-    });
-  }
-);
