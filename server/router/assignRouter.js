@@ -4,7 +4,7 @@ import {
   returnLaptop,
   handleAssignRequest,
   handleReturnRequest,
-  getAssignHistory,
+  getAllAssignHistory,
 } from "../controller/assignController.js";
 import { authMiddleware, Authorize } from "../middleware/authMiddleware.js";
 
@@ -14,7 +14,7 @@ const router = express.Router();
 router.route("/request-laptop").post(authMiddleware, requestLaptop);
 
 // Route to request for return laptop
-router.route("/return-laptop").post(authMiddleware, returnLaptop);
+router.route("/return-laptop").put(authMiddleware, returnLaptop);
 
 // Route for handling assignment requests (approve/deny)
 router
@@ -28,7 +28,7 @@ router
 
 // Router to get the history of assign laptop
 router
-  .route("/assign/history/:id")
-  .get(authMiddleware, Authorize("admin"), getAssignHistory);
+  .route("/assign-history")
+  .get(authMiddleware, Authorize("admin"), getAllAssignHistory);
 
 export default router;

@@ -15,7 +15,7 @@ export const requestLaptop = catchAsyncError(async (req, res, next) => {
   }
 
   const request = new Assign({
-    employeeId: req.user._id,
+    employeeId: req.user.userId,
     reqType,
     statusType: "pending",
   });
@@ -62,8 +62,12 @@ export const returnLaptop = catchAsyncError(async (req, res, next) => {
     );
   }
 
+  if (!assignRecord.employeeId || !req.user || !req.user.userId) {
+    return next(new CustomError("Invalid user or assignment record.", 400));
+  }
+
   // Authorization check
-  if (assignRecord.employeeId.toString() !== req.user._id.toString()) {
+  if (assignRecord.employeeId.toString() !== req.user.userId.toString()) {
     return next(
       new CustomError("You are not authorized to return this laptop.", 403)
     );
@@ -137,7 +141,7 @@ export const handleAssignRequest = catchAsyncError(async (req, res, next) => {
   request.statusType = "success";
   request.laptopId = laptopId;
   request.assignedAt = new Date();
-  laptop.statusType = "assigned";
+  laptop.status = "assigned";
   await Promise.all([request.save(), laptop.save()]);
   return res.status(200).json({
     message: "Laptop has been successfully assigned to the user.",
@@ -196,26 +200,25 @@ export const handleReturnRequest = catchAsyncError(async (req, res, next) => {
 });
 
 /* get assign request history */
-export const getAssignHistory = catchAsyncError(async (req, res, next) => {
+export const getAllAssignHistory = catchAsyncError(async (req, res, next) => {
   const { page = 1, limit = 10 } = req.query; // Page number and limit from query params
-
-  const request = await Assign.findById(req.params.id).populate("employeeId");
-
-  if (!request) {
-    return next(new CustomError("Request not found", 404));
-  }
 
   // Calculate the skip value (for pagination)
   const skip = (page - 1) * limit;
 
-  // Paginate the statusHistory array using slice
-  const paginatedHistory = request.statusHistory.slice(skip, skip + limit);
+  // Fetch all assignments with pagination
+  const totalRecords = await Assign.countDocuments(); // Total count of assignments
+  const assignments = await Assign.find()
+    .populate("employeeId", "-password -createdAt -updatedAt") // Exclude password, createdAt, and updatedAt
+    .skip(skip)
+    .limit(limit);
 
+  // Return the assignments with employee info
   res.status(200).json({
-    message: "Assign request history fetched successfully.",
-    statusHistory: paginatedHistory,
+    message: "All assign request histories fetched successfully.",
+    histories: assignments,
     currentPage: page,
-    totalPages: Math.ceil(request.statusHistory.length / limit),
-    totalRecords: request.statusHistory.length,
+    totalPages: Math.ceil(totalRecords / limit),
+    totalRecords,
   });
 });
