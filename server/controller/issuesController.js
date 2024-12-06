@@ -3,7 +3,7 @@ import Laptop from "../models/laptops.schema.js";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import CustomError from "../utils/customError.js";
 
-//create a new issues by employee
+/* create a new issues by employee */
 export const reportIssue = catchAsyncError(async (req, res, next) => {
   const { laptopId, description, priority } = req.body;
 
@@ -32,7 +32,7 @@ export const reportIssue = catchAsyncError(async (req, res, next) => {
   });
 });
 
-//get All issues
+/* get All issues */
 export const getAllIssues = catchAsyncError(async (req, res, next) => {
   const issues = await Issue.find().populate("laptopId").populate("reportedBy");
   res.status(200).json({
@@ -41,7 +41,7 @@ export const getAllIssues = catchAsyncError(async (req, res, next) => {
   });
 });
 
-//update issue status (Admin)
+/* update issue status (Admin) */
 export const updateIssuesStatus = catchAsyncError(async (req, res, next) => {
   const { issueId } = req.params;
   const { status } = req.body;
@@ -68,7 +68,7 @@ export const updateIssuesStatus = catchAsyncError(async (req, res, next) => {
   });
 });
 
-//get issues reported by the logged-in user
+/* get issues reported by the logged-in user */
 export const getUserIssues = catchAsyncError(async (req, res, next) => {
   const userId = req.user._id;
   const issues = await Issue.find({ reportedBy: userId }).populate("laptopId");

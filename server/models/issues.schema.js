@@ -14,13 +14,13 @@ const options = {
   },
   priority: {
     type: String,
-    enum: ["High", "Medium", "Low"],
+    enum: ["high", "medium", "low"],
     required: true,
-    default: "Medium",
+    default: "medium",
   },
   status: {
     type: String,
-    enum: ["Pending", "Accept"],
+    enum: ["pending", "accept"],
     required: true,
     default: "Pending",
   },

@@ -3,7 +3,7 @@ import Laptop from "../models/laptops.schema.js";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import CustomError from "../utils/customError.js";
 
-// Add laptop to maintenance
+/* Add laptop to maintenance */
 export const addToMaintenance = catchAsyncError(async (req, res, next) => {
   const { laptopId, description, cost } = req.body;
   // Check if the laptop exists
@@ -29,7 +29,7 @@ export const addToMaintenance = catchAsyncError(async (req, res, next) => {
   });
 });
 
-//Remove from maintenance
+/* Remove from maintenance */
 export const removeFromMaintenance = catchAsyncError(async (req, res, next) => {
   const { maintenanceId } = req.params;
 
@@ -54,7 +54,7 @@ export const removeFromMaintenance = catchAsyncError(async (req, res, next) => {
   });
 });
 
-//view all laptop under maintenance
+/* view all laptop under maintenance */
 export const getLaptopsUnderMaintenance = catchAsyncError(
   async (req, res, next) => {
     // Find all maintenance records with status 'Pending'

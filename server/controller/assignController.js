@@ -3,7 +3,7 @@ import Laptop from "../models/laptops.schema.js";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import CustomError from "../utils/customError.js";
 
-// Request for new laptop
+/* Request for new laptop */
 export const requestLaptop = catchAsyncError(async (req, res, next) => {
   const { reqType } = req.body;
 
@@ -29,7 +29,7 @@ export const requestLaptop = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// Return request for assign laptop
+/* Return request for assign laptop */
 export const returnLaptop = catchAsyncError(async (req, res, next) => {
   const { reqType, laptopId } = req.body;
 
@@ -87,7 +87,7 @@ export const returnLaptop = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// Request accept or denied for new laptop
+/* Request accept or denied for new laptop */
 export const handleAssignRequest = catchAsyncError(async (req, res, next) => {
   const { laptopId, deniedReason, reqType } = req.body;
 
@@ -145,7 +145,7 @@ export const handleAssignRequest = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// Request accept or denied for return laptop
+/* Request accept or denied for return laptop */
 
 export const handleReturnRequest = catchAsyncError(async (req, res, next) => {
   const { laptopId, deniedReason, reqType } = req.body;
@@ -195,7 +195,7 @@ export const handleReturnRequest = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// get assign request history
+/* get assign request history */
 export const getAssignHistory = catchAsyncError(async (req, res, next) => {
   const { page = 1, limit = 10 } = req.query; // Page number and limit from query params
 

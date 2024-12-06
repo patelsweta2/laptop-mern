@@ -2,7 +2,7 @@ import Laptop from "../models/laptops.schema.js";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import CustomError from "../utils/customError.js";
 
-// Create a new laptop
+/* Create a new laptop */
 export const createLaptop = catchAsyncError(async (req, res, next) => {
   const { brand, model, serialNumber, status, purchaseDate } = req.body;
 
@@ -35,7 +35,7 @@ export const createLaptop = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// Get all laptops (with pagination)
+/* Get all laptops (with pagination) */
 export const getAllLaptops = catchAsyncError(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
@@ -85,7 +85,7 @@ export const getAllLaptops = catchAsyncError(async (req, res) => {
   });
 });
 
-// Get a specific laptop by serial number
+/* Get a specific laptop by serial number */
 export const getLaptopById = catchAsyncError(async (req, res, next) => {
   const laptop = await Laptop.findById(req.params.id); // Find by ID
   if (!laptop) {
@@ -97,7 +97,7 @@ export const getLaptopById = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// Update a laptop by serial number
+/* Update a laptop by serial number */
 export const updateLaptop = catchAsyncError(async (req, res, next) => {
   const { serialNumber, ...updateData } = req.body;
   const laptop = await Laptop.findByIdAndUpdate(req.params.id, updateData, {
@@ -118,7 +118,7 @@ export const updateLaptop = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// Delete a laptop by serial number
+/*  Delete a laptop by serial number */
 export const deleteLaptop = catchAsyncError(async (req, res, next) => {
   const laptop = await Laptop.findOneAndDelete(req.params.id);
   if (!laptop) {
@@ -131,7 +131,7 @@ export const deleteLaptop = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// A single function to handle fetching laptops based on status
+/* A single function to handle fetching laptops based on status */
 export const getLaptopsByStatus = catchAsyncError(async (req, res, next) => {
   const status = req.params.status;
 

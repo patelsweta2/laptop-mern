@@ -2,7 +2,7 @@ import User from "../models/user.schema.js";
 import catchAsyncError from "../middleware/catchAsyncError.js";
 import CustomError from "./../utils/customError.js";
 
-//signUp controller --> POST -> api/users/signup
+/*  signUp controller --> POST -> api/users/signup   */
 export const signUp = catchAsyncError(async (req, res, next) => {
   const { name, email, password, department, role } = req.body;
 
@@ -30,7 +30,7 @@ export const signUp = catchAsyncError(async (req, res, next) => {
   });
 });
 
-//login controller --> POST -> api/users/login
+/* login controller --> POST -> api/users/login */
 export const login = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -65,7 +65,7 @@ export const login = catchAsyncError(async (req, res, next) => {
   });
 });
 
-// Get all employees controller --> GET -> api/users/employees
+/* Get all employees controller --> GET -> api/users/employees */
 export const getAllEmployees = catchAsyncError(async (req, res, next) => {
   // Fetch all users with 'employee' role from the database
   const employees = await User.find({ role: "employee" }).select("-password");
