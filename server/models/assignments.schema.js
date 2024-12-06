@@ -31,9 +31,17 @@ const options = {
     },
   },
 
-  reqStatus: {
-    type: Boolean,
-    default: false,
+  reqType: {
+    type: String,
+    enum: ["assignRequest", "returnRequest"],
+    validate: {
+      validator: function (value) {
+        return value === "assignRequest" || value === "returnRequest";
+      },
+      message: (props) =>
+        `${props.value} is not a valid request type. It must be "assignRequest" or "returnRequest".`,
+    },
+    required: [true, "Request type is required"],
   },
   statusType: {
     type: String,
