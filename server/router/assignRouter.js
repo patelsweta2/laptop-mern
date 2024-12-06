@@ -4,6 +4,7 @@ import {
   returnLaptop,
   handleAssignRequest,
   handleReturnRequest,
+  getAssignHistory,
 } from "../controller/assignController.js";
 import { authMiddleware, Authorize } from "../middleware/authMiddleware.js";
 
@@ -24,5 +25,10 @@ router
 router
   .route("/handle-return-request/:id")
   .put(authMiddleware, Authorize("admin"), handleReturnRequest);
+
+// Router to get the history of assign laptop
+router
+  .route("/assign/history/:id")
+  .get(authMiddleware, Authorize("admin"), getAssignHistory);
 
 export default router;

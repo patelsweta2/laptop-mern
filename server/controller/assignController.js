@@ -194,3 +194,28 @@ export const handleReturnRequest = catchAsyncError(async (req, res, next) => {
     request,
   });
 });
+
+// get assign request history
+export const getAssignHistory = catchAsyncError(async (req, res, next) => {
+  const { page = 1, limit = 10 } = req.query; // Page number and limit from query params
+
+  const request = await Assign.findById(req.params.id).populate("employeeId");
+
+  if (!request) {
+    return next(new CustomError("Request not found", 404));
+  }
+
+  // Calculate the skip value (for pagination)
+  const skip = (page - 1) * limit;
+
+  // Paginate the statusHistory array using slice
+  const paginatedHistory = request.statusHistory.slice(skip, skip + limit);
+
+  res.status(200).json({
+    message: "Assign request history fetched successfully.",
+    statusHistory: paginatedHistory,
+    currentPage: page,
+    totalPages: Math.ceil(request.statusHistory.length / limit),
+    totalRecords: request.statusHistory.length,
+  });
+});
